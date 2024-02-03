@@ -1,7 +1,7 @@
 .App {
   text-align: center;
-  width: 300px;
-  height: 100px;
+  width: 400px;
+  height: 80;
 }
 
 .App-logo {
@@ -78,8 +78,8 @@
 .product_image {
   align-items: center;
   display: flex;
-  justify-content: space-between;
-  transform: translateY(-50%);
+  justify-content: center;
+  transform: translateX(-110px) translateY(-30px);
   padding: 0 20px;
 }
 

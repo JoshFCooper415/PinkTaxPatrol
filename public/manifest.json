@@ -18,12 +18,6 @@
     "148": "smile2.png",
     "60": "smile3.png"
   },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["contentScript.js"]
-    }
-  ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#000000",
