@@ -1,5 +1,8 @@
 import flask
 from flask import request, make_response
+import numpy as np
+import joblib
+import lightbeam
 
 app = flask.Flask(__name__)
 
@@ -19,3 +22,12 @@ def processProduct():
         }
         response = make_response(productInfo, 200)  # wait for josh to do NLP bullshit
         return response
+
+
+def inferFromModel():
+    rf = joblib.load("../Data/lgbm_classifier_model.joblib")
+    np.load(../)
+
+
+
+
