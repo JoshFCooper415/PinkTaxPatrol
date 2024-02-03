@@ -1,0 +1,16 @@
+{
+  "short_name": "PTP",
+  "name": "Pink Tax Patrol",
+  "version": "1.0",
+  "description": "This chrome extension will help you save money by avoiding overspending on commonly pink taxed items",
+  "manifest_version": 2,
+  "icons": {
+    "16": "public/HackVioletLogo16.png",
+    "48": "public/HackVioletLogo48.png",
+    "128": "public/HackVioletLogo128.png"
+  },
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
