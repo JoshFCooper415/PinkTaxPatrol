@@ -41,18 +41,38 @@
   padding: 0 20px;
 }
 
-.navigation .left-triangle {
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-right: 40px #9a16a1;
+.navigation button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
   outline: none;
 }
 
-.navigation .right-triangle {
-  border-top: 20px solid transparent;
-  border-bottom: 20px solid transparent;
-  border-right: 40px #9a16a1;
+.navigation .left-triangle {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-right: 15px solid #d676a4; /* Arrow color */
   outline: none;
+  cursor: pointer;
+}
+
+
+.navigation .right-triangle {
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+  border-left: 15px solid #d676a4; /* Arrow color */
+  outline: none;
+  cursor: pointer;
+}
+
+.navigation .left-triangle:active{
+  border-right-color: #963d74;
+}
+
+
+.navigation .right-triangle:active {
+  border-left-color: #963d74;
 }
 
 @keyframes App-logo-spin {
