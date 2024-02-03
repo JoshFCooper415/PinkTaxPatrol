@@ -1,6 +1,16 @@
 {
+  "manifest_version": 2,
   "short_name": "React App",
   "name": "Create React App Sample",
+  "description": "HELLO !!!",
+  "permissions": ["activeTab", "storage"],
+  "browser_action": {
+      "default_popup": "index.html",
+      "default_icon": {
+        "16": "image/logo-16.png",
+        "32": "image/logo-32.png",
+      }
+  },
   "icons": [
     {
       "src": "favicon.ico",
