@@ -4,33 +4,40 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  // red button stuff
+
+  var count = 0;
+  
+  const [isPink, setIsPink] = useState(false);
+  const [currentOption, setCurrentOption] = useState(0);
+  const options = ['product 1', 'product 2', 'product 3'];
+  const [imageSrc, setImageSrc] = useState("/smile1.png");
+
   const handleClick = () => {
     setIsPink(!isPink);
   };
-  const [isPink, setIsPink] = useState(false);
 
-  // ok let's do option choosing
-  const [currentOption, setCurrentOption] = useState(0);
-  const options = ['product 1', 'product 2', 'product 3'];
+  const updateImage = (index) => {
+    setImageSrc("/smile" + (index+1) + ".png")
+  }
 
   // left and right moving
   const handleLeft = () => {
-    setCurrentOption(prev => (prev -1 + options.length) % options.length);
+    const newIndex = (currentOption - 1 + options.length) % options.length;
+    setCurrentOption(newIndex);
+    updateImage(newIndex);
   };
 
   const handleRight = () => {
-    setCurrentOption(prev => (prev + 1) % options.length);
+    const newIndex = (currentOption + 1) % options.length;
+    setCurrentOption(newIndex);
+    updateImage(newIndex);
   }
 
   return (
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and fun away yayyyy to reload.
-        </p>
-        <div id="content" dangerouslySetInnerHTML={{ __html: content }}></div>
+        <img class = "product_image" id = "product" src={imageSrc} alt="Product"></img>
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -50,6 +57,7 @@ function App() {
           <button onClick={handleLeft} className="left-triangle"></button>
           <button onClick={handleRight} className="right-triangle"></button>
         </div>
+
       </header>
     </div>
   );
