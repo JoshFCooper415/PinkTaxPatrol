@@ -9,7 +9,7 @@ def processProduct():
     if request.method == 'POST':
         data = request.get_json()
         productInfo = {
-            "name": f"{data.get('productName')}",
+            "name": f"{data['productName']}",
             "units": f"{data['units']}",
             "price": f"{data['price']}",
             "numRatings": f"{data['numRatings']}",
