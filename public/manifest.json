@@ -1,35 +1,24 @@
 {
-    "manifest_version": 2,
-    "short_name": "Pink Tax Patrol",
-    "name": "Create React App Sample",
-    "description": "HELLO !!!",
-    "permissions": ["activeTab", "storage"],
-    "browser_action": {
-        "default_popup": "index.html",
-        "default_icon": {
-          "16": "image/logo-16.png",
-          "32": "image/logo-32.png"
-        }
-    },
-    "icons": [
-      {
-        "src": "HackVioletLogo.ico",
-        "sizes": "64x64 32x32 24x24 16x16",
-        "type": "image/x-icon"
-      },
-      { 
-        "src": "HackVioletLogo192.png",
-        "type": "image/png",
-        "sizes": "192x192"
-      },
-      {
-        "src": "HackVioletLogo512.png",
-        "type": "image/png",
-        "sizes": "512x512"
-      }
-    ],
-    "start_url": ".",
-    "display": "standalone",
-    "theme_color": "#000000",
-    "background_color": "#ffffff"
-  }
+  "manifest_version": 2,
+  "version": "1.0",
+  "short_name": "Pink Tax Patrol",
+  "name": "Create React App Sample",
+  "description": "HELLO !!!",
+  "permissions": ["activeTab", "storage"],
+  "browser_action": {
+      "default_popup": "index.html"
+  },
+  "icons": {
+    "16": "HackVioletLogo16.png",
+    "48": "HackVioletLogo48.png",
+    "128": "HackVioletLogo128.png"
+  },
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
+
+
+
+
