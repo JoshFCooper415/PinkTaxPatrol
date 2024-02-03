@@ -1,13 +1,18 @@
+/* global chrome */
+import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import { useState } from 'react';
 
 function App() {
-  const handleClick = () => {
-    setIsRed(!isRed);
-  };
+  const [content, setContent] = useState('');
 
-  const [isRed, setIsRed] = useState(false);
+  useEffect(() => {
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+      chrome.tabs.sendMessage(tabs[0].id, { action: 'getDOMElement' }, function (response) {
+        setContent(response.content);
+      });
+    });
+  }, []); // Run the effect only once when the component mounts
 
   return (
     <div className="App">
@@ -16,6 +21,7 @@ function App() {
         <p>
           Edit <code>src/App.js</code> and fun away yayyyy to reload.
         </p>
+        <div id="content" dangerouslySetInnerHTML={{ __html: content }}></div>
         <a
           className="App-link"
           href="https://reactjs.org"
@@ -24,13 +30,9 @@ function App() {
         >
           Learn React
         </a>
-        <button onClick={handleClick} className="App-button" style={{backgroundColor: isRed ? 'red' : 'initial'}}>
-          Click Me
-        </button>
       </header>
     </div>
   );
 }
 
 export default App;
-

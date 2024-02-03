@@ -1,12 +1,8 @@
-
-function getDataFromElementById() {
-    const element = document.getElementById('exampleElement');
-    if (element) {
-      console.log('Data from element:', element.textContent);
-    } else {
-      console.log('Element with ID "exampleElement" not found');
-    }
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+  if (request.action === "getDOMElement") {
+    const elementId = prompt("Enter the ID of the element to display:");
+    const element = document.getElementById(elementId);
+    const content = element ? element.outerHTML : `Element with ID '${elementId}' not found.`;
+    sendResponse({ content: content });
   }
-  
-  getDataFromElementById();
-  
+});
