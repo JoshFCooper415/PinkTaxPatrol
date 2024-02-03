@@ -8,10 +8,15 @@
   "browser_action": {
       "default_popup": "index.html"
   },
-  "icons": {
+  "icons": 
+  {
     "16": "HackVioletLogo16.png",
     "48": "HackVioletLogo48.png",
-    "128": "HackVioletLogo128.png"
+    "128": "HackVioletLogo128.png",
+
+    "55": "smile1.png",
+    "148": "smile2.png",
+    "60": "smile3.png"
   },
   "start_url": ".",
   "display": "standalone",
