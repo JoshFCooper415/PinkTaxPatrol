@@ -17,4 +17,4 @@ RUN sudo apt update && sudo apt upgrade -y
 RUN sudo apt install -y git
 RUN sudo apt install -y  python3-pip
 
-RUN pip install flask requests pandas
+RUN pip install flask requests pandas xgboost scikit-learn
