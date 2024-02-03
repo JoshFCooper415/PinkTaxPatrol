@@ -46,7 +46,7 @@ function App() {
         >
           Learn React
         </a>
-        <button onClick={handleClick} className="App-button" style={{backgroundColor: isPink ? '#bd4880' : 'initial'}}>
+        <button onClick={handleClick} className="App-button" id="findElementButton" style={{backgroundColor: isPink ? '#bd4880' : 'initial'}}>
           Click Me
         </button>
 

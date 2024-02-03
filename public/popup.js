@@ -1,18 +1,32 @@
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('findElementButton').addEventListener('click', function () {
-        chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-            chrome.scripting.executeScript({
-                target: { tabId: tabs[0].id },
-                function: findAndLogElements
-            });
-        });
+chrome.tabs.onActivated.addListener(function (activeInfo) {
+    chrome.tabs.get(activeInfo.tabId, function (tab) {
+        // Check if the tab is loading or has finished loading
+        if (tab.status === "complete") {
+            // Execute your function on the active tab
+            executeScriptOnTab(tab.id);
+        }
     });
 });
+
+chrome.webNavigation.onCompleted.addListener(function (details) {
+    // Check if the completed navigation is on an Amazon page
+    if (details.url.includes("https://www.amazon.com/")) {
+        // Execute your function on the active tab
+        executeScriptOnTab(details.tabId);
+    }
+});
+
+function executeScriptOnTab(tabId) {
+    chrome.scripting.executeScript({
+        target: { tabId: tabId },
+        function: findAndLogElements
+    });
+}
 
 function findAndLogElements() {
 
     function sendToServer(data) {
-        fetch('http://localhost:3000/product', {
+        fetch('http://localhost:5000/product', {
             method: 'POST',  
             headers: {
                 'Content-Type': 'application/json',
