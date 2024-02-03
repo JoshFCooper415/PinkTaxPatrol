@@ -38,15 +38,7 @@ function App() {
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
         <img class = "product_image" id = "product" src={imageSrc} alt="Product"></img>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-        <button onClick={handleClick} className="App-button" id="findElementButton" style={{backgroundColor: isPink ? '#bd4880' : 'initial'}}>
+        <button onClick={handleClick} className="App-button" style={{backgroundColor: isPink ? '#bd4880' : 'initial'}}>
           Click Me
         </button>
 
