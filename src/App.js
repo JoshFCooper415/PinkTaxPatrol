@@ -6,41 +6,41 @@ function App() {
 
   const [currentOption, setPriceDrop] = useState(0);
   const [currentProductOption, setProductName] = useState(0);
-  const [imageSrc, setImageSrc] = useState("/smile1.png");
   const [currentID, setProductId] = useState(0);
+  const [currentProduct, setProduct] = useState(0);
 
   const options = ['product 1', 'product 2', 'product 3'];
   const priceOptions = [5, 2.4, 10];
   const nameOptions = ['shirt', 'razor', 'shampoo'];
-  const idOptions = ['a', 'b', 'cdfgijeiofjgaj']
-
-  const updateImage = (index) => {
-    setImageSrc("/smile" + (index+1) + ".png")
-  }
+  const idOptions = ['a', 'b', 'cdfgijeiofjgaj'] 
+  const productOptions = ['https://www.amazon.com/dp/B08KT2Z93D', 'https://www.amazon.com/dp/B00477OXKA', 'https://www.amazon.com/dp/B0037LOPQY'] 
 
   // left and right moving
-  const handleLeft = () => {
+  const handleLeft = (e) => {
+    e.stopPropagation();
     const newIndex = (currentOption - 1 + options.length) % options.length;
     setPriceDrop(newIndex);
     setProductName(newIndex);
-    updateImage(newIndex);
     setProductId(newIndex);
   };
 
-  const handleRight = () => {
+  const handleRight = (e) => {
+    e.stopPropagation();
     const newIndex = (currentOption + 1) % options.length;
     setPriceDrop(newIndex);
     setProductName(newIndex);
-    updateImage(newIndex);
     setProductId(newIndex);
+  }
+
+  const redirectToLink = () => {
+    chrome.tabs.create({ url: productOptions[currentProductOption] });
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <div className="product-container">
 
-          <img class = "product-image" id = "product" src={imageSrc} alt="Product"></img>
+        <div className="product-container" onClick={redirectToLink}>
           
           <p className="product-name">
             <strong>Product Name:</strong> {nameOptions[currentProductOption]}
@@ -53,7 +53,7 @@ function App() {
           <p className='product-id'>
             <strong>Product ID:</strong> {idOptions[currentID]}
           </p>
-          
+
         </div>
 
         {/* Navigation buttons */}

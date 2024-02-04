@@ -74,16 +74,12 @@
   border-radius: 40px;
 }
 
-.product-image {
-  padding-left: 30px;
-}
-
 .product-name {
   color: #000000;
   font-size: 20px;
   margin: 40px 0;
   text-align: left;
-  padding-left: 10px;
+  padding-left: 30px;
 }
 
 .price-drop {
@@ -91,7 +87,7 @@
   font-size: 20px;
   margin: 20px 0;
   text-align: left;
-  padding-left: 10px;
+  padding-left: 5px;
 }
 
 .product-id {
