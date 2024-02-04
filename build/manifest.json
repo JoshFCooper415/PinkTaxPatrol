@@ -3,7 +3,7 @@
   "version": "1.0",
   "short_name": "Pink Tax Patrol",
   "name": "Create React App Sample",
-  "description": "HELLO !!!",
+  "description": "This chrome extension is meant to help you avoid overspending on pink taxed Amazon items",
   "permissions":
   [
      "activeTab", 
