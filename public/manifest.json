@@ -3,9 +3,6 @@
   "version": "1.0",
   "short_name": "Pink Tax Patrol",
   "name": "Create React App Sample",
-  "description": "Helping you avoid overspending on pink taxed amazon products",
-  "permissions": ["activeTab", "storage"],
-  "browser_action": {
   "description": "HELLO !!!",
   "permissions":
   [
@@ -16,8 +13,8 @@
      "webNavigation"
   ],
   "host_permissions": [
-    "https://*/",
-    "http://*/"
+    "https://%2A/",
+    "http://%2A/"
   ],
   "action": {
       "default_popup": "index.html"
@@ -41,7 +38,3 @@
   "theme_color": "#000000",
   "background_color": "#ffffff"
 }
-
-
-
-
