@@ -19,6 +19,7 @@ app = flask.Flask(__name__)
 def processProduct():
     if request.method == 'POST':
         data = request.get_json()
+        # todo: add ability to parse the actual recieved JSON
         productInfo = {
             "name": f"{data['productName']}",
             "units": f"{data['units']}",
@@ -67,9 +68,10 @@ def align_words(words, valid_words):
 def sanatizeInfoDump(infoDump: str):
     infoDump = re.sub("[ ]{2,}", repl=" ", string=infoDump)
     infoDump = re.sub(".u200.", repl="", string=infoDump)
+    infoDump = re.sub(r"\u200f : \u200e", repl=":", string=infoDump)
+
     # infoDump = re.sub("\\n", repl="", string=infoDump)
-    print(infoDump)
-    print(infoDump[172])
+
     return json.loads(infoDump)
 
 
@@ -80,53 +82,34 @@ def getImportantDetails(productJSON):
         listProducts[manufacturterIndex]
 
     # Split the input string by the delimiter "‏ : ‎"
-    segments = listProducts.split("‏ : ‎")
+    segments = listProducts.split("+++")
 
-    # Initialize variables to store extracted data
-    product_dimensions = "Not Available"
-    item_model_number = "Not Available"
-    date_first_available = "Not Available"
-    manufacturer = "Not Available"
-    asin = "Not Available"
-    country_of_origin = "Not Available"
-
+    endDict = {}
     print(segments)
     # Iterate over the segments and extract data
     for segment in segments:
         # Clean up the segment
         segment = segment.strip()
 
-        # Check if the segment contains any relevant data
-        if segment.startswith("Product Dimensions"):
-            product_dimensions = segment[len("Product Dimensions"):].strip()
-        elif segment.startswith("Item model number"):
-            item_model_number = segment[len("Item model number"):].strip()
-        elif segment.startswith("Date First Available"):
-            date_first_available = segment[len("Date First Available"):].strip()
-        elif segment.startswith("Manufacturer"):
-            manufacturer = segment[len("Manufacturer"):].strip()
-        elif segment.startswith("ASIN"):
-            asin = segment[len("ASIN"):].strip()
-        elif segment.startswith("Country of Origin"):
-            country_of_origin = segment[len("Country of Origin"):].strip()
-    print(product_dimensions, item_model_number, date_first_available, manufacturer, asin, country_of_origin)
+        Datatype, information = segment.split(":")
+
+        # print(product_dimensions, item_model_number, date_first_available, manufacturer, asin, country_of_origin)
+        endDict.update({Datatype: information})
+
+    print(endDict)
+    # print(endDict)
 
 
-data = sanatizeInfoDump("""{
-    "productName": "Trojan Bareskin Condoms, Everythin Variety Pack, 10 Count",
-    "productCostWhole": "9.",
-    "productCostFraction": "78",
-    "listProducts": "Product Dimensions\n                                    \u200f\n
-              :\n                                    \u200e\n                                 3 x 2 x 5 inches; 1.45 Ounces            Item model number\n                                    \u200f\n
-                :\n                                    \u200e\n                                 10022600001543            Date First Available\n                                    \u200f\n
-      :\n                                    \u200e\n                                 March 25, 2022
-                         Manufacturer\n                                    \u200f\n
-            :\n                                    \u200e\n                                 Church & Dwight            ASIN\n                                    \u200f\n                                        :\n
-                          \u200e\n                                 B0B6YNSJB4            Country of Origin\n                                    \u200f\n                                        :\n
-         \u200e\n                                 USA",
-    "productReviewCount": "894 ratings",
+data = sanatizeInfoDump(""" {
+    "productName": "Trojan Bareskin Thin Premium Lubricated Condoms - 24 Count",
+    "productCostWhole": "15.",
+    "productCostFraction": "97",
+    "listProducts": "Is Discontinued By Manufacturer \u200f : \u200e No+++Product Dimensions \u200f : \u200e 1.81 x 5.13 x 5.19 inches; 2.4 Ounces+++Item model number \u200f : \u200e DL-409+++Department \u200f : \u200e mens, womens, uni sex adult,+++Date First Available \u200f : \u200e December 12, 2011+++Manufacturer \u200f : \u200e Church & Dwight - Personal Care+++ASIN \u200f : \u200e B008UYN4QA+++Country of Origin \u200f : \u200e Japan",
+    "productReviewCount": "15,144 ratings",
     "productReviewRating": "4.6 out of 5 stars"
-} """)
+}
+
+ """)
 
 data = getImportantDetails(data)
 
