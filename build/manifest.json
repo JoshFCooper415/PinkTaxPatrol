@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "version": "1.0",
+  "short_name": "Pink Tax Patrol",
+  "name": "Create React App Sample",
+  "description": "HELLO !!!",
+  "permissions":
+  [
+     "activeTab", 
+     "storage", 
+     "scripting",
+     "notifications",
+     "webNavigation"
+  ],
+  "host_permissions": [
+    "https://%2A/",
+    "http://%2A/"
+  ],
+  "action": {
+      "default_popup": "index.html"
+  },
+  "icons": 
+  { 
+    "16": "HackVioletLogo16.png",
+    "48": "HackVioletLogo48.png",
+    "128": "HackVioletLogo128.png",
+
+    "100": "smile1.png",
+    "148": "smile2.png",
+    "60": "smile3.png"
+  },
+  "background": {
+      "service_worker": "popup.js",
+      "type": "module"
+  },
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

@@ -20,7 +20,7 @@ EXPOSE 5000
 RUN sudo apt install -y  python3-pip
 WORKDIR /
 
-RUN pip install flask requests pandas xgboost scikit-learn joblib numpy lightbeam
+RUN pip install flask requests pandas xgboost scikit-learn joblib numpy lightbeam flask_CORS
 
 RUN mkdir home/$USERNAME/code
 WORKDIR ./home/$USERNAME/code

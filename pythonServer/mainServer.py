@@ -11,8 +11,10 @@ import re
 import pandas as pd
 from sklearn.feature_extraction.text import CountVectorizer
 import joblib  # for saving and loading sklearn models
+from flask_cors import CORS
 
 app = flask.Flask(__name__)
+CORS(app)
 
 
 @app.route('/product', methods=['GET', 'POST'])
