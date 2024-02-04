@@ -1,33 +1,7 @@
-chrome.tabs.onActivated.addListener(function (activeInfo) {
-    chrome.tabs.get(activeInfo.tabId, function (tab) {
-        // Check if the tab is loading or has finished loading
-        if (tab.status === "complete") {
-            // Execute your function on the active tab
-            executeScriptOnTab(tab.id);
-        }
-    });
-});
-
-chrome.webNavigation.onCompleted.addListener(function (details) {
-    // Check if the completed navigation is on an Amazon page
-    if (details.url.includes("https://www.amazon.com/")) {
-        // Execute your function on the active tab
-        executeScriptOnTab(details.tabId);
-    }
-});
-
-function executeScriptOnTab(tabId) {
-    chrome.scripting.executeScript({
-        target: { tabId: tabId },
-        function: findAndLogElements
-    });
-}
-
 function findAndLogElements() {
-
     function sendToServer(data) {
         fetch('http://localhost:5000/product', {
-            method: 'POST',  
+            method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -35,13 +9,17 @@ function findAndLogElements() {
         })
         .then(response => response.json())
         .then(responseData => {
-            console.log('Server response:', responseData);
+            updateAppState(responseData);
         })
         .catch(error => {
             console.error('Error sending data to server:', error);
         });
     }
-    
+
+    function updateAppState(responseData) {
+        chrome.runtime.sendMessage({ action: 'updateAppState', data: responseData });
+    }
+
     var elementIds = {
         productName: 'productTitle',
         productCostWhole: { selector: '.a-price-whole', type: 'class' },
@@ -71,4 +49,26 @@ function findAndLogElements() {
     }
 
     sendToServer(elementContents);
+}
+
+// Add this listener to handle the state update from the content script
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'updateAppState') {
+        updateAppState(request.data);
+    }
+});
+
+function updateAppState(data) {
+    // Assuming that data contains the necessary arrays
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: function (data) {
+                // Assuming that the React app has a global function updateAppStateFromBackground
+                if (typeof updateAppStateFromBackground === 'function') {
+                    updateAppStateFromBackground(data);
+                }
+            },
+        });
+    });
 }
