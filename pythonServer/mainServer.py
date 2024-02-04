@@ -21,18 +21,19 @@ CORS(app)
 def processProduct():
     if request.method == 'POST':
         data = request.get_json()
+        #print(data)
         # todo: add ability to parse the actual recieved JSON
         productInfo = {
             "name": f"{data['productName']}",
-            "units": f"{data['units']}",
-            "priceWhole": f"{data['priceWhole']}",
-            "priceFraction": f"{data['priceFraction']}",
-            "numRatings": f"{data['numRatings']}",
-            "numStars": f"{data['numStars']}",
-            "description": f"{data['description']}",
-            "asin": f"{data['asin']}",
-            "infoDump": f"{data['infoDump']}"
+            "priceCostWhole": f"{data['productCostWhole']}",
+            "priceFraction": f"{data['productCostFraction']}",
+            "listProducts": f"{data['listProducts']}",
+            "productReviewCount": f"{data['productReviewCount']}",
+            "productReviewRating": f"{data['productReviewRating']}",
         }
+        data = sanatizeInfoDump(productInfo)
+        data = getImportantDetails(data)
+        print(data)
 
         inferFromModel(productName=productInfo.get("name"))
         response = make_response(productInfo, 200)  # wait for josh to do NLP bullshit
@@ -67,14 +68,15 @@ def align_words(words, valid_words):
 
 
 # Example usage:
-def sanatizeInfoDump(infoDump: str):
-    infoDump = re.sub("[ ]{2,}", repl=" ", string=infoDump)
-    infoDump = re.sub(".u200.", repl="", string=infoDump)
-    infoDump = re.sub(r"\u200f : \u200e", repl=":", string=infoDump)
+def sanatizeInfoDump(infoDump: dict):
+    print("")
+    infoDump['listProducts'] = re.sub("[ ]{2,}", repl=" ", string=infoDump['listProducts'])
+    infoDump['listProducts'] = re.sub(".u200.", repl="", string=infoDump['listProducts'])
+    infoDump['listProducts'] = re.sub(r"\u200f : \u200e", repl=":", string=infoDump['listProducts'])
 
     # infoDump = re.sub("\\n", repl="", string=infoDump)
 
-    return json.loads(infoDump)
+    return infoDump
 
 
 def getImportantDetails(productJSON):
@@ -87,7 +89,7 @@ def getImportantDetails(productJSON):
     segments = listProducts.split("+++")
 
     endDict = {}
-    print(segments)
+    #print(segments)
     # Iterate over the segments and extract data
     for segment in segments:
         # Clean up the segment
@@ -96,24 +98,28 @@ def getImportantDetails(productJSON):
         Datatype, information = segment.split(":")
 
         # print(product_dimensions, item_model_number, date_first_available, manufacturer, asin, country_of_origin)
+        
         endDict.update({Datatype: information})
 
-    print(endDict)
-    # print(endDict)
+    del productJSON['listProducts']
+    productJSON = {**productJSON, **endDict}
+    return productJSON
 
 
-data = sanatizeInfoDump(""" {
-    "productName": "Trojan Bareskin Thin Premium Lubricated Condoms - 24 Count",
-    "productCostWhole": "15.",
-    "productCostFraction": "97",
-    "listProducts": "Is Discontinued By Manufacturer \u200f : \u200e No+++Product Dimensions \u200f : \u200e 1.81 x 5.13 x 5.19 inches; 2.4 Ounces+++Item model number \u200f : \u200e DL-409+++Department \u200f : \u200e mens, womens, uni sex adult,+++Date First Available \u200f : \u200e December 12, 2011+++Manufacturer \u200f : \u200e Church & Dwight - Personal Care+++ASIN \u200f : \u200e B008UYN4QA+++Country of Origin \u200f : \u200e Japan",
-    "productReviewCount": "15,144 ratings",
-    "productReviewRating": "4.6 out of 5 stars"
-}
+#
+#data = sanatizeInfoDump(""" {
+#    "productName": "Trojan Bareskin Thin Premium Lubricated Condoms - 24 Count",
+#    "productCostWhole": "15.",
+#    "productCostFraction": "97",
+#    "listProducts": "Is Discontinued By Manufacturer \u200f : \u200e No+++Product Dimensions \u200f : \u200e 1.81 x 5.13 x 5.19 inches; 2.4 Ounces+++Item model number \u200f : \u200e DL-409+++Department \u200f : \u200e mens, womens, uni sex adult,+++Date First Available \u200f : \u200e December 12, 2011+++Manufacturer \u200f : \u200e Church & Dwight - Personal Care+++ASIN \u200f : \u200e B008UYN4QA+++Country of Origin \u200f : \u200e Japan",
+#    "productReviewCount": "15,144 ratings",
+#    "productReviewRating": "4.6 out of 5 stars"
+#}
+#
+# """)
+# """
 
- """)
-
-data = getImportantDetails(data)
+#data = getImportantDetails(data)
 
 
 def preprocess_data(df, vectorizer=None, fit_vectorizer=True):
