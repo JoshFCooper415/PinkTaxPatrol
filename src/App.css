@@ -1,7 +1,8 @@
 .App {
   text-align: center;
   width: 400px;
-  height: 80;
+  height: 80px;
+  background-color: none;
 }
 
 .App-logo {
@@ -9,21 +10,14 @@
   pointer-events: none;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #ffc2d1;
-  min-height: 100vh;
+  height: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
-  color: white;
 }
 
 .App-link {
@@ -37,8 +31,7 @@
   right: 0;
   display: flex;
   justify-content: space-between;
-  transform: translateY(-50%);
-  padding: 0 20px;
+  padding: 0 5px;
 }
 
 .navigation button {
@@ -57,7 +50,6 @@
   cursor: pointer;
 }
 
-
 .navigation .right-triangle {
   border-top: 10px solid transparent;
   border-bottom: 10px solid transparent;
@@ -75,24 +67,40 @@
   border-left-color: #963d74;
 }
 
-.product_image {
-  align-items: center;
+.product-container {
   display: flex;
-  justify-content: center;
-  transform: translateX(-110px) translateY(-30px);
-  padding: 0 20px;
+  align-items: center;
+  justify-content: flex-start;
+  border-radius: 40px;
 }
 
-.product_image div {
-  width: 300;
-  height: 300;
+.product-image {
+  padding-left: 30px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.product-name {
+  color: #000000;
+  font-size: 20px;
+  margin: 40px 0;
+  text-align: left;
+  padding-left: 10px;
 }
+
+.price-drop {
+  color: #000000;
+  font-size: 20px;
+  margin: 20px 0;
+  text-align: left;
+  padding-left: 10px;
+}
+
+.product-id {
+  color: #000000;
+  font-size: 20px;
+  margin: 20px 0;
+  text-align: left;
+  padding-left: 10px;
+  padding-right: 30px;
+}
+
+

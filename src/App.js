@@ -1,20 +1,18 @@
 /* global chrome */
 import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 function App() {
 
-  var count = 0;
-  
-  const [isPink, setIsPink] = useState(false);
-  const [currentOption, setCurrentOption] = useState(0);
-  const options = ['product 1', 'product 2', 'product 3'];
+  const [currentOption, setPriceDrop] = useState(0);
+  const [currentProductOption, setProductName] = useState(0);
   const [imageSrc, setImageSrc] = useState("/smile1.png");
+  const [currentID, setProductId] = useState(0);
 
-  const handleClick = () => {
-    setIsPink(!isPink);
-  };
+  const options = ['product 1', 'product 2', 'product 3'];
+  const priceOptions = [5, 2.4, 10];
+  const nameOptions = ['shirt', 'razor', 'shampoo'];
+  const idOptions = ['a', 'b', 'cdfgijeiofjgaj']
 
   const updateImage = (index) => {
     setImageSrc("/smile" + (index+1) + ".png")
@@ -23,27 +21,41 @@ function App() {
   // left and right moving
   const handleLeft = () => {
     const newIndex = (currentOption - 1 + options.length) % options.length;
-    setCurrentOption(newIndex);
+    setPriceDrop(newIndex);
+    setProductName(newIndex);
     updateImage(newIndex);
+    setProductId(newIndex);
   };
 
   const handleRight = () => {
     const newIndex = (currentOption + 1) % options.length;
-    setCurrentOption(newIndex);
+    setPriceDrop(newIndex);
+    setProductName(newIndex);
     updateImage(newIndex);
+    setProductId(newIndex);
   }
 
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <img class = "product_image" id = "product" src={imageSrc} alt="Product"></img>
-        <button onClick={handleClick} className="App-button" style={{backgroundColor: isPink ? '#bd4880' : 'initial'}}>
-          Click Me
-        </button>
+        <div className="product-container">
 
-        {/* Render the current option*/}
-        <div>{options[currentOption]}</div>
+          <img class = "product-image" id = "product" src={imageSrc} alt="Product"></img>
+          
+          <p className="product-name">
+            <strong>Product Name:</strong> {nameOptions[currentProductOption]}
+          </p>
+
+          <p className='price-drop'>
+            <strong>Price Drop:</strong> ${priceOptions[currentOption]}
+          </p>
+
+          <p className='product-id'>
+            <strong>Product ID:</strong> {idOptions[currentID]}
+          </p>
+          
+        </div>
+
         {/* Navigation buttons */}
         <div className="navigation">
           <button onClick={handleLeft} className="left-triangle"></button>
