@@ -42,14 +42,17 @@ def processProduct():
 
 def inferFromModel(productName: str):
     rf = joblib.load("../Data/lgbm_classifier_model.joblib")
-    validWords = np.load("../Data/col_names.npy")
+    validWords = np.load("../Data/col_names.npy", allow_pickle=True)
     words = np.char.split(productName, " ")
-
+    print("WORDS: ", words)
     mask = np.isin(words, validWords)
+    print("MASK: ", np.all(mask==0))
     words = words[mask]
 
     np.sort(words)
-
+    
+    print("WORDS: ", words)
+    print("VALIDWORDS: ", validWords)
     wordFixer = np.vectorize(align_words)
     words = wordFixer(words, validWords)
     df = pd.DataFrame(words, columns=validWords)
