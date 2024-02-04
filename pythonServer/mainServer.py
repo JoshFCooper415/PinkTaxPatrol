@@ -5,6 +5,7 @@ import numpy as np
 import joblib
 import lightbeam
 import sklearn
+import pandas
 
 app = flask.Flask(__name__)
 
@@ -40,6 +41,9 @@ def inferFromModel(productName: str):
 
     wordFixer = np.vectorize(align_words)
     words = wordFixer(words, validWords)
+    df = pandas.DataFrame(words, columns=validWords)
+
+    rf.predict_proba(df)
 
 
 print(np.load("../Data/col_names.npy", allow_pickle=True))

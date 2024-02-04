@@ -28,7 +28,7 @@ WORKDIR ./home/$USERNAME/code
 RUN git clone https://github.com/JoshFCooper415/PinkTaxPatrol.git
 WORKDIR ./PinkTaxPatrol
 RUN echo "$PWD"
-RUN git checkout pythonServer
+RUN git checkout pythonServer --
 WORKDIR ./pythonServer
 RUN echo "$PWD"
 CMD ["python3", "-m", "flask", "--app", "mainServer",  "run"]
