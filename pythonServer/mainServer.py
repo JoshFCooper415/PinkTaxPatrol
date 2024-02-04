@@ -164,7 +164,7 @@ def preprocess_data(df, vectorizer=None, fit_vectorizer=True):
     df = df.join(one_hot_encoded)
 
     # Replace spaces with underscores in column names and sort columns
-    df.columns = [col.replace(' ', '_') for col in df.columns]
+    df.columns = [col.replace(' ', '') for col in df.columns]
     df = df.sort_index(axis=1)
 
     df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
