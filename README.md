@@ -1,5 +1,5 @@
 # PinkTaxPatrol
-Chrome extension to prevent overspending on pink tax!
+Chrome extension to prevent overspending on pink tax
 
 ## How to add the extention
 * Download the zip file from this repo
@@ -35,10 +35,10 @@ We also scrape the Amazon site for the critical product information.
 * Due to the lack of free Amazon API's to generate a database to inference off of, we instead turned to other options. Using the 100 free searches from 3 different Amazon API's, we were able to create a dataset with 10,000 elements.
 
 ## Accomplishments that we're proud of
-One hacker went from **never having used react** to building an entire chrome extension with it. 
-One hacker **created a Docker container** to communicate between the ML algorithm and chrome extension front end.
-One hacker **scraped the web** for Amazon images that were cleverly hidden in the website.
-One hacker wrote a **gradient-boosted random forests with dropout algorithm** from scratch to perform NLP on the Amazon products.
+* One hacker went from **never having used react** to building an entire chrome extension with it. 
+* One hacker **created a Docker container** to communicate between the ML algorithm and chrome extension front end.
+* One hacker **scraped the web** for Amazon images that were cleverly hidden in the website.
+* One hacker wrote a **gradient-boosted random forests with dropout algorithm** from scratch to perform NLP on the Amazon products.
 
 ## What we learned
 
