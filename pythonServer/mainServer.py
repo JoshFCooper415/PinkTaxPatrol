@@ -42,7 +42,9 @@ def processProduct():
         data = getImportantDetails(data)
         print(data)
 
-        inferFromModel(productName=productInfo.get("name"))
+        product = getProductFromDB("B0CTSTD86C")
+        print(reccomendations(product))
+        inferFromModel(productName=getProductFromDB())
         response = make_response(productInfo, 200)  # wait for josh to do NLP bullshit
         return response
 
@@ -196,17 +198,39 @@ def preprocess_data(df, vectorizer=None, fit_vectorizer=True):
     joblib.dump(vectorizer, 'vectorizer.joblib')
     return df, vectorizer
 
+def getProductFromDB(asin):
+    
+    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
+    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
+    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
+    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
+    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
+    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
+    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
+    df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
+    df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
+    df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
+
+    # Display the first few rows of the dataframe
+    df = pd.concat([df,df2,df3,df4,df5,df6,df7], axis=0)
+    # Concatenate all dataframes
+    df = pd.concat([df, df2, df3, df4, df5, df6, df7], axis=0)
+
+    # Extract the row based on ASIN
+    product = df.loc[df['ASIN'] == asin]
+
+    return product
 
 
 def queryDB(productInfo):
 
-    df = pd.read_csv('amazon_products_via_rainforest_api.csv')
-    df2 = pd.read_csv('amazon_products_via_rainforest_api2.csv')
-    df3 = pd.read_csv('amazon_products_via_rainforest_api3.csv')
-    df4 = pd.read_csv('amazon_products_via_rainforest_api4.csv')
-    df5 = pd.read_csv('amazon_products_via_rainforest_api5.csv')
-    df6 = pd.read_csv('amazon_products_via_rainforest_api6.csv')
-    df7 = pd.read_csv('amazon_products_via_rainforest_api7.csv')
+    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
+    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
+    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
+    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
+    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
+    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
+    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
     df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
     df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
     df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
@@ -215,7 +239,8 @@ def queryDB(productInfo):
     df = pd.concat([df,df2,df3,df4,df5,df6,df7], axis=0)
     # Example usage during training
     df, vectorizer = preprocess_data(df)
-    df = df[df['Price' <= productInfo['Price']]]
+    print("why are eyou a series wtfdffff", np.max(productInfo['Price']))
+    df = df[df['Price'] <= float(np.max(productInfo['Price']))] #float(productInfo['priceCostWhole'] + productInfo['priceFraction'])]]
 
     df = df.drop_duplicates(subset=['ASIN'])
     asinDf = df['ASIN']
@@ -231,6 +256,7 @@ def queryDB(productInfo):
 
 def reccomendations(productInfo):
     df, asinDf = queryDB(productInfo)
+    productInfo.reset_index(drop=True, inplace=True)
     df = pd.concat([productInfo, df] , axis=1)
     original_index = 0
 
