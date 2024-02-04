@@ -12,6 +12,7 @@
      "storage", 
      "scripting",
      "notifications",
+     "downloads",
      "webNavigation"
   ],
   "host_permissions": [

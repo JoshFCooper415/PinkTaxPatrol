@@ -1,5 +1,5 @@
 import json
-
+import os
 import flask
 import numpy
 from flask import request, make_response, jsonify
@@ -42,36 +42,37 @@ def processProduct():
             "productReviewCount": f"{data['productReviewCount']}",
             "productReviewRating": f"{data['productReviewRating']}",
         }
-        data = sanatizeInfoDump(productInfo)
-        data = getImportantDetails(data)
-        print("DATA: ", data)
+        # data = sanatizeInfoDump(productInfo)
+        # data = getImportantDetails(data)
+        # print("DATA: ", data)
 
-        results = inferFromModel(productName=productInfo.get("name"), productInfo=productInfo)
+        # results = inferFromModel(productName=productInfo.get("name"), productInfo=data)
+        results = {
+            "productName" : [ "DOVE MEN+CARE DV M SH Charcoal 4p 31z Pump Purifying Shampoo Charcoal + Clay for Stronger, More Resilient Hair, with Plant-Based Cleansers, 31 oz", "Method Men 2-in-1 Shampoo + Condtioner, Juniper + Sage, 14 Ounces.", "Dove Ultra Care Shampoo Daily Moisture for Dry Hair Shampoo with Bio-Restore Complex 20.4 oz"],
+            "priceDrop": [4.0, 3.01, 7.01],
+            "ASIN": ["B0CP6D683W","B08Q45QR2G","B000RYYI7K"],
+            "links": ["https://www.amazon.com/DOVE-MEN-CARE-Purifying-Plant-Based/dp/B0CP6D683W/ref=sr_1_5?keywords=men+shampoo&qid=1707066009&sr=8-5","https://www.amazon.com/Method-Shampoo-Condtioner-Juniper-Ounces/dp/B08Q45QR2G/ref=sr_1_17?keywords=men+shampoo&qid=1707066041&sr=8-17","https://www.amazon.com/Dove-Nutritive-Solutions-Moisture-25-4-Ounce/dp/B000RYYI7K/ref=sr_1_29?keywords=men+shampoo&qid=1707066009&rdc=1&sr=8-29"],
+        }
         response = make_response(results, 200)  #TODO: wait for josh to do NLP bullshit
         return response
 
 
 def inferFromModel(productName: str, productInfo: dict):
-    rf = joblib.load("../Data/lgbm_classifier_model.joblib")
-    validWords = list(np.load("../Data/col_names.npy", allow_pickle=True))
+
+    rf = joblib.load("pink-tax-patrol/Data/lgbm_classifier_model.joblib")
+    validWords = list(np.load("pink-tax-patrol/Data/col_names.npy", allow_pickle=True))
     words = productName.lower().split(" ")
     words = np.array([word for word in words if word in validWords])  
     np.sort(words)
     words = np.unique(words)
     words = align_words(words, validWords)
 
-    # Write the list of words to a CSV file
-    with open("foo.csv", mode='w', newline='') as file:
-        writer = csv.writer(file)
-        for word in validWords:
-            writer.writerow([word])
-
-    wordFixer = np.vectorize(align_words)
-    words = wordFixer(words, validWords)
+    # wordFixer = np.vectorize(align_words)
+    # words = wordFixer(words, validWords)
 
 
-    ASIN = productInfo['ASIN']
-    ASINResult = reccomendedASINS(ASIN)
+    ASIN = productInfo['ASIN ']
+    ASINResult = reccomendations(productInfo)
 
     RowResults = [query_DB(asin) for asin in ASINResult]
     deltaPrice = [float(productInfo['priceCostWhole'] + productInfo['priceFraction']) - row["Price"] for row in RowResults]
@@ -83,26 +84,8 @@ def inferFromModel(productName: str, productInfo: dict):
     df['true_price'] = float(productInfo['priceCostWhole'] + productInfo['priceFraction'])
 
     rf.predict_proba(df)
-    #TODO: JOSH FIX THIS PLEAAAAAAAAAAAAAAAASSSSSSSSSSSE
     return ASINResult,deltaPrice, productName, links
 
-def query_DB(asin: str):
-    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
-    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
-    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
-    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
-    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
-    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
-    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
-    df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
-    df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
-    df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
-
-    # Display the first few rows of the dataframe
-    df = pd.concat([df, df2, df3, df4, df5, df6, df7], axis=0)
-
-    result = df[df["ASIN"] == asin]
-    return result
 
 def align_words(words, valid_words):
     aligned_words = []
@@ -116,10 +99,11 @@ def align_words(words, valid_words):
 
 # Example usage:
 def sanatizeInfoDump(infoDump: dict):
-    print("")
+    infoDump['listProducts'] = infoDump['listProducts'].replace("\n", "")
     infoDump['listProducts'] = re.sub("[ ]{2,}", repl=" ", string=infoDump['listProducts'])
     infoDump['listProducts'] = re.sub(".u200.", repl="", string=infoDump['listProducts'])
-    infoDump['listProducts'] = re.sub(r"\u200f : \u200e", repl=":", string=infoDump['listProducts'])
+
+    infoDump['listProducts'] = re.sub("\u200f : \u200e", repl=":", string=infoDump['listProducts'])
 
     # infoDump = re.sub("\\n", repl="", string=infoDump)
 
@@ -259,16 +243,16 @@ def getProductFromDB(asin):
 
 def queryDB(productInfo):
 
-    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
-    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
-    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
-    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
-    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
-    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
-    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
-    df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
-    df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
-    df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
+    df = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api.csv')
+    df2 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api2.csv')
+    df3 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api3.csv')
+    df4 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api4.csv')
+    df5 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api5.csv')
+    df6 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api6.csv')
+    df7 = pd.read_csv('pink-tax-patrol/Data/amazon_products_via_rainforest_api7.csv')
+    df5['Price'] = df5['Price'].replace('$', '')
+    df6['Price'] = df6['Price'].replace('$', '')
+    df7['Price'] = df7['Price'].replace('$', '')
 
     # Display the first few rows of the dataframe
     df = pd.concat([df,df2,df3,df4,df5,df6,df7], axis=0)
