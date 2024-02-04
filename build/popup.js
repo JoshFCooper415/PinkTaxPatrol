@@ -23,8 +23,8 @@ function executeScriptOnTab(tabId) {
     });
 }
 
-function findAndLogElements() {
 
+function findAndLogElements() {
     function sendToServer(data) {
         fetch('http://localhost:5000/product', {
             method: 'POST',
@@ -33,27 +33,26 @@ function findAndLogElements() {
             },
             body: JSON.stringify(data),
         })
-            .then(response => response.json())
-            .then(responseData => {
-                console.log('Server response:', responseData);
-            })
-            .catch(error => {
-                console.error('Error sending data to server:', error);
-            });
+        .then(response => response.json())
+        .then(responseData => {
+            chrome.runtime.sendMessage({ action: 'updateAppState', data: responseData })
+        })
+        .catch(error => {
+            console.error('Error sending data to server:', error);
+        });
     }
 
     var elementIds = {
         productName: 'productTitle',
-        productCostWhole: {selector: '.a-price-whole', type: 'class'},
-        productCostFraction: {selector: '.a-price-fraction', type: 'class'},
+        productCostWhole: { selector: '.a-price-whole', type: 'class' },
+        productCostFraction: { selector: '.a-price-fraction', type: 'class' },
         listProducts: 'detailBullets_feature_div',
         productReviewCount: 'acrCustomerReviewLink',
-        productReviewRating: {selector: '.a-icon-alt', type: 'class'}
+        productReviewRating: { selector: '.a-icon-alt', type: 'class' }
     };
 
     var elementContents = {};
 
-    // Iterate through each key-value pair in elementIds
     for (const [key, elementInfo] of Object.entries(elementIds)) {
         var myElement;
 
@@ -64,27 +63,7 @@ function findAndLogElements() {
         }
 
         if (myElement) {
-            var elementContent;
-
-            // Check if the current element is the 'listProducts' container
-            if (key === 'listProducts') {
-                // For listProducts, get each element under the container
-                var listElements = myElement.querySelectorAll('.a-list-item');
-                elementContent = [];
-
-                listElements.forEach((listElement) => {
-                    // Clean up each item in the listProducts array and concatenate with "+++"
-                    var cleanedItem = listElement.textContent.trim().replace(/\n\s*/g, ' ');
-                    elementContent.push(cleanedItem);
-                });
-
-                // Concatenate the cleaned items with "+++" between elements
-                elementContent = elementContent.join('+++');
-            } else {
-                // For other elements, get the text content
-                elementContent = myElement.textContent.trim();
-            }
-
+            var elementContent = myElement.textContent.trim();
             elementContents[key] = elementContent;
         } else {
             elementContents[key] = "Element not found";
@@ -93,3 +72,29 @@ function findAndLogElements() {
 
     sendToServer(elementContents);
 }
+
+// Add this listener to handle the state update from the content script
+chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+    if (request.action === 'updateAppState') {
+        updateAppState(request.data);
+    }
+});
+
+function updateAppState(data) {
+    // Assuming that data contains the necessary arrays
+    console.log("heuawifn")
+    chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+        chrome.scripting.executeScript({
+            target: { tabId: tabs[0].id },
+            function: function (data) {
+                // Assuming that the React app has a global function updateAppStateFromBackground
+                if (typeof updateAppStateFromBackground === 'function') {
+                    updateAppStateFromBackground(data);
+                }
+            },
+        });
+    });
+}
+
+
+

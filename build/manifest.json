@@ -6,6 +6,8 @@
   "description": "This chrome extension is meant to help you avoid overspending on pink taxed Amazon items",
   "permissions":
   [
+    "<all_urls>",
+     "tabs",
      "activeTab", 
      "storage", 
      "scripting",
@@ -13,8 +15,8 @@
      "webNavigation"
   ],
   "host_permissions": [
-    "https://%2A/",
-    "http://%2A/"
+    "http://*/",
+    "https://*/"
   ],
   "action": {
       "default_popup": "index.html"
