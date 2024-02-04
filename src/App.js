@@ -11,7 +11,7 @@ function App() {
 
   const options = ['product 1', 'product 2', 'product 3'];
   const priceOptions = [5, 2.4, 10];
-  const nameOptions = ['shirt', 'razor', 'shampoo'];
+  const nameOptions = ['shirt roeijgore gjierojgo erojieogjeoijge roeijgoe erogjeoij', 'razor', 'shampoo'];
   const idOptions = ['a', 'b', 'cdfgijeiofjgaj'] 
   const productOptions = ['https://www.amazon.com/dp/B08KT2Z93D', 'https://www.amazon.com/dp/B00477OXKA', 'https://www.amazon.com/dp/B0037LOPQY'] 
 
