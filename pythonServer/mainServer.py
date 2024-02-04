@@ -16,6 +16,13 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.preprocessing import StandardScaler
 import joblib  # for saving and loading sklearn models
 from flask_cors import CORS
+from sklearn.feature_extraction.text import CountVectorizer
+import joblib  # for saving and loading sklearn models
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.preprocessing import StandardScaler
+from lightgbm import LGBMClassifier
+from sklearn.metrics.pairwise import cosine_similarity
 
 app = flask.Flask(__name__)
 CORS(app)
@@ -226,14 +233,39 @@ def preprocess_data(df, vectorizer=None, fit_vectorizer=True):
     joblib.dump(vectorizer, 'vectorizer.joblib')
     return df, vectorizer
 
-def generateReccomendationDatabase():
-    df = pd.read_csv('amazon_products_via_rainforest_api.csv')
-    df2 = pd.read_csv('amazon_products_via_rainforest_api2.csv')
-    df3 = pd.read_csv('amazon_products_via_rainforest_api3.csv')
-    df4 = pd.read_csv('amazon_products_via_rainforest_api4.csv')
-    df5 = pd.read_csv('amazon_products_via_rainforest_api5.csv')
-    df6 = pd.read_csv('amazon_products_via_rainforest_api6.csv')
-    df7 = pd.read_csv('amazon_products_via_rainforest_api7.csv')
+def getProductFromDB(asin):
+    
+    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
+    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
+    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
+    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
+    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
+    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
+    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
+    df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
+    df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
+    df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
+
+    # Display the first few rows of the dataframe
+    df = pd.concat([df,df2,df3,df4,df5,df6,df7], axis=0)
+    # Concatenate all dataframes
+    df = pd.concat([df, df2, df3, df4, df5, df6, df7], axis=0)
+
+    # Extract the row based on ASIN
+    product = df.loc[df['ASIN'] == asin]
+
+    return product
+
+
+def queryDB(productInfo):
+
+    df = pd.read_csv('../data/amazon_products_via_rainforest_api.csv')
+    df2 = pd.read_csv('../data/amazon_products_via_rainforest_api2.csv')
+    df3 = pd.read_csv('../data/amazon_products_via_rainforest_api3.csv')
+    df4 = pd.read_csv('../data/amazon_products_via_rainforest_api4.csv')
+    df5 = pd.read_csv('../data/amazon_products_via_rainforest_api5.csv')
+    df6 = pd.read_csv('../data/amazon_products_via_rainforest_api6.csv')
+    df7 = pd.read_csv('../data/amazon_products_via_rainforest_api7.csv')
     df5['Price'] = df5['Price'].str.replace('$', '').astype(float)
     df6['Price'] = df6['Price'].str.replace('$', '').astype(float)
     df7['Price'] = df7['Price'].str.replace('$', '').astype(float)
@@ -242,12 +274,57 @@ def generateReccomendationDatabase():
     df = pd.concat([df,df2,df3,df4,df5,df6,df7], axis=0)
     # Example usage during training
     df, vectorizer = preprocess_data(df)
+    print("why are eyou a series wtfdffff", np.max(productInfo['Price']))
+    df = df[df['Price'] <= float(np.max(productInfo['Price']))] #float(productInfo['priceCostWhole'] + productInfo['priceFraction'])]]
+
     df = df.drop_duplicates(subset=['ASIN'])
     asinDf = df['ASIN']
-    df = df.drop(['Product_Name','ASIN','Category'], axis =1)
-    return df
+    df = df.drop(['ProductName','ASIN','Category'], axis =1)
 
-def preprocess_reccomendation_data(df, vectorizer=None, fit_vectorizer=True):
+        # Find indices of rows where 'Keyword' equals 1
+    indices_to_drop = df[df['Keyword'] == 1].index
+
+    # Drop these rows
+    df = df.drop(index=indices_to_drop)
+
+    return df, asinDf
+
+def reccomendations(productInfo):
+    df, asinDf = queryDB(productInfo)
+    productInfo.reset_index(drop=True, inplace=True)
+    df = pd.concat([productInfo, df] , axis=1)
+    original_index = 0
+
+    # Preprocessing: Scale features (excluding 'true_price') for cosine similarity
+    scaler = StandardScaler()
+    scaled_features = scaler.fit_transform(df)
+
+    # Calculate cosine similarity
+    cos_sim_matrix = cosine_similarity(scaled_features)
+
+    # Extract similarity scores for the original row and create a DataFrame for them
+    similarity_scores = pd.Series(cos_sim_matrix[original_index], index=df.index)
+
+    # Add similarity scores to the original DataFrame (excluding the original row itself)
+    df['similarity'] = similarity_scores
+    df.reset_index(drop=True, inplace=True)
+    df_filtered = df.drop(index=original_index)
+
+
+    # Filter rows with lower 'true_price' and sort by similarity
+    similar_rows = df_filtered[df_filtered['true_price'] < df.loc[original_index, 'true_price']].sort_values(by='similarity', ascending=False)
+
+    # Select the top 3 most similar rows
+    top_3_similar = similar_rows.head(3)
+    return asinDf.iloc[top_3_similar.index[0]], asinDf.iloc[top_3_similar.index[1]], asinDf.iloc[top_3_similar.index[2]]
+
+
+
+
+
+
+# Function to apply all transformations
+def preprocess_data(df, vectorizer=None, fit_vectorizer=True):
     """
     Applies all transformations to the dataframe `df`.
     
@@ -285,33 +362,7 @@ def preprocess_reccomendation_data(df, vectorizer=None, fit_vectorizer=True):
     df = df.join(one_hot_encoded)
     
     # Replace spaces with underscores in column names and sort columns
-    df.columns = [col.replace(' ', '_') for col in df.columns]
+    df.columns = [col.replace(' ', '') for col in df.columns]
     df = df.sort_index(axis=1)
     
     return df, vectorizer
-def reccomendedASINS(asin):
-    original_index = 0
-
-    # Preprocessing: Scale features (excluding 'true_price') for cosine similarity
-    scaler = StandardScaler()
-    scaled_features = scaler.fit_transform(df)
-
-    # Calculate cosine similarity
-    cos_sim_matrix = cosine_similarity(scaled_features)
-
-    # Extract similarity scores for the original row and create a DataFrame for them
-    similarity_scores = pd.Series(cos_sim_matrix[original_index], index=df.index)
-
-    # Add similarity scores to the original DataFrame (excluding the original row itself)
-    df['similarity'] = similarity_scores
-    df.reset_index(drop=True, inplace=True)
-    df_filtered = df.drop(index=original_index)
-
-
-    # Filter rows with lower 'true_price' and sort by similarity
-    similar_rows = df_filtered[df_filtered['true_price'] < df.loc[original_index, 'true_price']].sort_values(by='similarity', ascending=False)
-
-    # Select the top 3 most similar rows
-    top_3_similar = similar_rows.head(3)
-
-    return top_3_similar
